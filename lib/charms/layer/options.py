@@ -1,11 +1,11 @@
+import os
+import sys
 from pathlib import Path
 
 import yaml
 
-from charmhelpers.core import hookenv
 
-
-_CHARM_PATH = Path(hookenv.charm_dir() or '.')
+_CHARM_PATH = Path(os.environ.get('JUJU_CHARM_DIR', '.'))
 _DEFAULT_FILE = _CHARM_PATH / 'layer.yaml'
 _CACHE = {}
 
@@ -24,3 +24,14 @@ def get(section=None, option=None, layer_file=_DEFAULT_FILE):
     if option:
         data = data.get(option)
     return data
+
+
+# terrible hack to support the old terrible interface
+# try to get people to call layer.options.get() instead so
+# that we can remove this garbage
+# cribbed from https://stackoverflow.com/a/48100440/4941864
+class BackwardsCompatibilityHack(sys.modules[__name__].__class__):
+    def __call__(self, section=None, layer_file=None):
+        return get(section=section,
+                   layer_file=Path(layer_file or _DEFAULT_FILE))
+sys.modules[__name__].__class__ = BackwardsCompatibilityHack
