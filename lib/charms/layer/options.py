@@ -1,11 +1,10 @@
+import os
 from pathlib import Path
 
 import yaml
 
-from charmhelpers.core import hookenv
 
-
-_CHARM_PATH = Path(hookenv.charm_dir() or '.')
+_CHARM_PATH = Path(os.environ.get('JUJU_CHARM_DIR', '.'))
 _DEFAULT_FILE = _CHARM_PATH / 'layer.yaml'
 _CACHE = {}
 
