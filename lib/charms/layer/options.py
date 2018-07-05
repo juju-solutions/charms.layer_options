@@ -15,7 +15,8 @@ def get(section=None, option=None, layer_file=_DEFAULT_FILE):
 
     layer_file = (_CHARM_PATH / layer_file).resolve()
     if layer_file not in _CACHE:
-        _CACHE[layer_file] = yaml.safe_load(layer_file.read_text())
+        with layer_file.open() as fp:
+            _CACHE[layer_file] = yaml.safe_load(fp.read())
 
     data = _CACHE[layer_file].get('options', {})
     if section:
